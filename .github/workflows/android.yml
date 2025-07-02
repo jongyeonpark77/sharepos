@@ -1,0 +1,86 @@
+name: Android CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Generate Keystore
+      run: |
+        keytool -genkey -v -keystore app/keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias sharepos -storepass sharepos123 -keypass sharepos123 -dname "CN=SharePos, OU=Development, O=SharePos, L=Seoul, S=Seoul, C=KR" -noprompt
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug
+
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: SharePos-Debug-APK
+        path: app/build/outputs/apk/debug/app-debug.apk
+
+    - name: Build Release APK
+      run: ./gradlew assembleRelease
+
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: SharePos-Release-APK
+        path: app/build/outputs/apk/release/app-release.apk
+
+    - name: Create Release
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: SharePos v${{ github.run_number }}
+        body: |
+          SharePos Android App - 위치 공유 앱
+          
+          ## 새로운 기능
+          - 구글 맵 통합
+          - 현재 위치 표시
+          - 위치 공유 기능
+          - 최신 Android 14 지원
+          
+          ## 설치 방법
+          1. APK 파일을 다운로드
+          2. 휴대폰에서 설치
+          3. 위치 권한 허용
+          4. 앱 실행
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Assets
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./app/build/outputs/apk/release/app-release.apk
+        asset_name: SharePos-v${{ github.run_number }}.apk
+        asset_content_type: application/vnd.android.package-archive
