@@ -1,0 +1,24 @@
+# Online Build Configuration for SharePos
+# This file will be used by online build services
+
+project_name: SharePos
+version: 1.0
+build_type: debug
+
+android:
+  compileSdk: 34
+  targetSdk: 34
+  minSdk: 24
+  
+dependencies:
+  - androidx.appcompat:appcompat:1.6.1
+  - com.google.android.material:material:1.11.0
+  - androidx.constraintlayout:constraintlayout:2.1.4
+  - com.google.android.gms:play-services-maps:18.2.0
+  - com.google.android.gms:play-services-location:21.1.0
+
+features:
+  - Google Maps Integration
+  - Location Services
+  - Material Design 3
+  - Location Sharing 

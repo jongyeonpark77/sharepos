@@ -1,0 +1,36 @@
+{
+  "project": {
+    "name": "SharePos",
+    "version": "1.0.0",
+    "package": "com.example.sharepos"
+  },
+  "android": {
+    "compileSdk": 34,
+    "targetSdk": 34,
+    "minSdk": 24,
+    "buildTools": "34.0.0"
+  },
+  "dependencies": {
+    "androidx": {
+      "appcompat": "1.6.1",
+      "constraintlayout": "2.1.4"
+    },
+    "google": {
+      "material": "1.11.0",
+      "play-services-maps": "18.2.0",
+      "play-services-location": "21.1.0"
+    }
+  },
+  "features": [
+    "Google Maps Integration",
+    "Location Services",
+    "Material Design 3",
+    "Location Sharing"
+  ],
+  "permissions": [
+    "INTERNET",
+    "ACCESS_FINE_LOCATION",
+    "ACCESS_COARSE_LOCATION",
+    "ACCESS_NETWORK_STATE"
+  ]
+} 
